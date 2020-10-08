@@ -42,6 +42,7 @@ services:
     image: redis:latest
     # container name
     container_name: redis
+    restart: always
     # execute the command once start redis container
     command: [
         "redis-server",

@@ -29,6 +29,13 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     client.emit('joinedRoom', room);
   }
 
+  @SubscribeMessage('writing')
+  public writing(client: Socket, payload: any): Promise<WsResponse<any>>  {
+    console.log('okas',payload);
+    return this.server.to(payload.room).emit('writingToClient', payload);
+  }
+  
+
   @SubscribeMessage('leaveRoom')
   public leaveRoom(client: Socket, room: string): void {
     client.leave(room);
@@ -44,6 +51,6 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   }
 
   public handleConnection(client: Socket): void {
-    return this.logger.log(`Client connected: ${client.id}`);
+    return this.logger.log(`Client conectado: ${client.id}`);
   }
 }

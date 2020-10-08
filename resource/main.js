@@ -8,6 +8,8 @@ const app = new Vue({
     messages: [],
     socket: null,
     activeRoom: '',
+    escribiendo: '',
+    delaym: null,
     rooms: {
       general: false,
       roomA: false,
@@ -53,6 +55,23 @@ const app = new Vue({
       } else {
         this.socket.emit('joinRoom', this.activeRoom);
       }
+    },
+    writting() {
+      const message = {
+        wri: 'Alguien esta escribiendo...',
+        room: this.activeRoom
+      };
+      this.socket.emit('writing', message);
+    },
+    notwritting() {
+      clearTimeout(this.delaym);
+      const message = {
+        wri: '',
+        room: this.activeRoom
+      };
+      this.delaym = setTimeout(() => {
+        this.socket.emit('writing',message);      
+      },400)
     }
   },
   computed: {
@@ -61,10 +80,10 @@ const app = new Vue({
     }
   },
   created() {
+    this.name = 'pepe'+Math.floor(Math.random() * (20 - 1)) + 1;
     this.activeRoom = this.selected;
-    this.socket = io('http://localhost:3004/chat');
+    this.socket = io('http://192.168.1.14:3004/chat');
     this.socket.on('msgToClient', (message) => {
-      console.log(message);
       this.receivedMessage(message)
     });
 
@@ -78,6 +97,12 @@ const app = new Vue({
 
     this.socket.on('leftRoom', (room) => {
       this.rooms[room] = false;
+    });
+
+    this.socket.on('writingToClient', (mge) => {
+      console.log(mge.wri);
+      this.escribiendo = mge.wri;
+      this.rooms[room] = true;
     });
   }
 });
